@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: student-record-system
+    runtime: docker
+    plan: free
+    envVars:
+      - key: ADMIN_USER
+        value: admin
+      - key: ADMIN_PASS
+        sync: false
+      - key: AUTH_SECRET
+        generateValue: true

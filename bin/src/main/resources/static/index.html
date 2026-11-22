@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Record Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+
+  <main class="wrap">
+    <header class="top">
+      <div>
+        <p class="eyebrow">D Y Patil International University</p>
+        <h1>Student Record <span>Management</span></h1>
+      </div>
+      <button class="btn primary" id="addBtn">+ Add Student</button>
+    </header>
+
+    <section class="stats">
+      <div class="card stat"><p>Total Students</p><h2 id="statTotal">0</h2></div>
+      <div class="card stat"><p>Courses</p><h2 id="statCourses">0</h2></div>
+      <div class="card stat"><p>Showing</p><h2 id="statShown">0</h2></div>
+    </section>
+
+    <section class="card panel">
+      <div class="search">
+        <input id="search" type="search" placeholder="Search by PRN or name..." autocomplete="off">
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>PRN</th><th>Name</th><th>Course</th><th>Year</th><th>Phone</th><th class="right">Actions</th></tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <p id="empty" class="empty" hidden>No student records found.</p>
+      </div>
+    </section>
+
+    <footer>Student Record Management System &middot; Java &middot; Spring Boot &middot; SQL</footer>
+  </main>
+
+  <dialog id="modal">
+    <form id="form" method="dialog" novalidate>
+      <h3 id="modalTitle">Add Student</h3>
+      <label>PRN
+        <input id="prn" required maxlength="30" placeholder="202508021214">
+      </label>
+      <label>Name
+        <input id="name" required maxlength="80" placeholder="Full name">
+      </label>
+      <label>Course
+        <input id="course" required maxlength="60" placeholder="B.Tech CSE">
+      </label>
+      <div class="two">
+        <label>Year
+          <input id="year" type="number" min="1" max="6" required placeholder="1-6">
+        </label>
+        <label>Phone
+          <input id="phone" maxlength="15" placeholder="9876543210">
+        </label>
+      </div>
+      <p id="formError" class="error" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn ghost" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn primary" id="saveBtn">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Record Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+
+  <!-- LOGIN -->
+  <section id="loginView" class="login" hidden>
+    <form id="loginForm" class="card login-card">
+      <p class="eyebrow">D Y Patil International University</p>
+      <h1>Admin <span>Login</span></h1>
+      <label>Username
+        <input id="loginUser" autocomplete="username" required>
+      </label>
+      <label>Password
+        <input id="loginPass" type="password" autocomplete="current-password" required>
+      </label>
+      <p id="loginError" class="error" hidden></p>
+      <button class="btn primary block" type="submit">Sign in</button>
+    </form>
+  </section>
+
+  <!-- APP -->
+  <main id="appView" class="wrap" hidden>
+    <header class="top">
+      <div>
+        <p class="eyebrow">D Y Patil International University</p>
+        <h1>Student Record <span>Management</span></h1>
+      </div>
+      <div class="top-actions">
+        <button class="btn ghost" id="themeBtn" title="Toggle theme">Theme</button>
+        <button class="btn ghost" id="logoutBtn">Logout</button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="students">Students</button>
+      <button class="tab-btn" data-tab="attendance">Attendance</button>
+    </nav>
+
+    <!-- Dashboard -->
+    <section id="tab-dashboard" class="tab">
+      <div class="stats">
+        <div class="card stat"><p>Total Students</p><h2 id="statTotal">0</h2></div>
+        <div class="card stat"><p>Courses</p><h2 id="statCourses">0</h2></div>
+        <div class="card stat"><p>Average Attendance</p><h2 id="statAtt">0%</h2></div>
+      </div>
+      <div class="charts">
+        <div class="card chart-card"><h3>Students per course</h3><div class="chart-box"><canvas id="courseChart"></canvas></div></div>
+        <div class="card chart-card"><h3>Students per year</h3><div class="chart-box"><canvas id="yearChart"></canvas></div></div>
+      </div>
+    </section>
+
+    <!-- Students -->
+    <section id="tab-students" class="tab" hidden>
+      <div class="card panel">
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="Search by PRN or name..." autocomplete="off">
+          <select id="courseFilter"><option value="">All courses</option></select>
+          <select id="yearFilter">
+            <option value="">All years</option>
+            <option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option>
+            <option value="4">Year 4</option><option value="5">Year 5</option><option value="6">Year 6</option>
+          </select>
+        </div>
+        <div class="toolbar buttons">
+          <button class="btn primary" id="addBtn">+ Add Student</button>
+          <button class="btn ghost" id="importBtn">Import CSV</button>
+          <button class="btn ghost" id="exportBtn">Export CSV</button>
+        </div>
+
+        <div class="table-wrap">
+          <table id="studentTable">
+            <thead>
+              <tr>
+                <th data-sort="prn">PRN</th>
+                <th data-sort="name" class="asc">Name</th>
+                <th data-sort="course">Course</th>
+                <th data-sort="year">Year</th>
+                <th data-sort="phone">Phone</th>
+                <th class="right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <p id="empty" class="empty" hidden>No student records found.</p>
+        </div>
+
+        <div class="pager">
+          <button class="btn sm" id="prevBtn">&larr; Prev</button>
+          <span id="pageInfo">Page 1</span>
+          <button class="btn sm" id="nextBtn">Next &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Attendance -->
+    <section id="tab-attendance" class="tab" hidden>
+      <div class="card panel">
+        <div class="toolbar buttons">
+          <label class="inline">Date <input type="date" id="attDate"></label>
+          <button class="btn ghost" id="markAllBtn">Mark all present</button>
+          <button class="btn primary" id="saveAttBtn">Save attendance</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>PRN</th><th>Name</th><th>Status</th><th>Overall</th></tr></thead>
+            <tbody id="attRows"></tbody>
+          </table>
+          <p id="attEmpty" class="empty" hidden>No students yet. Add students first.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>Student Record Management System &middot; Java &middot; Spring Boot &middot; SQL</footer>
+  </main>
+
+  <!-- Add / Edit dialog -->
+  <dialog id="formDlg">
+    <form id="studentForm" novalidate>
+      <h3 id="formTitle">Add Student</h3>
+      <div class="photo-row">
+        <div id="formAvatar"></div>
+        <div>
+          <input type="file" id="photoFile" accept="image/*" hidden>
+          <button type="button" class="btn sm" id="photoPick">Choose photo</button>
+          <button type="button" class="btn sm" id="photoRemove">Remove</button>
+        </div>
+      </div>
+      <label>PRN <input id="prn" maxlength="20" placeholder="202508021214"></label>
+      <label>Name <input id="name" maxlength="80" placeholder="Full name"></label>
+      <label>Course <input id="course" maxlength="60" placeholder="B.Tech CSE"></label>
+      <div class="two">
+        <label>Year <input id="year" type="number" min="1" max="6" placeholder="1-6"></label>
+        <label>Phone <input id="phone" maxlength="10" inputmode="numeric" placeholder="10 digits"></label>
+      </div>
+      <p id="formError" class="error" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn ghost" id="formCancel">Cancel</button>
+        <button type="submit" class="btn primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Report card dialog -->
+  <dialog id="reportDlg" class="wide">
+    <div id="reportBody"></div>
+    <div class="actions no-print">
+      <button class="btn ghost" id="reportPrint">Print / Save as PDF</button>
+      <button class="btn primary" id="reportClose">Close</button>
+    </div>
+  </dialog>
+
+  <!-- Import dialog -->
+  <dialog id="importDlg">
+    <h3>Import students from CSV</h3>
+    <p class="hint">Columns: <b>prn, name, course, year, phone</b>. In Excel use Save As &rarr; CSV.</p>
+    <input type="file" id="importFile" accept=".csv,text/csv">
+    <p><button type="button" class="btn sm" id="templateBtn">Download template</button></p>
+    <div id="importResult" class="import-result" hidden></div>
+    <div class="actions">
+      <button class="btn ghost" id="importClose">Close</button>
+      <button class="btn primary" id="importRun">Import</button>
+    </div>
+  </dialog>
+
+  <!-- Confirm dialog -->
+  <dialog id="confirmDlg" class="small">
+    <h3>Are you sure?</h3>
+    <p id="confirmText" class="hint"></p>
+    <div class="actions">
+      <button class="btn ghost" id="confirmNo">Cancel</button>
+      <button class="btn danger" id="confirmYes">Delete</button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
